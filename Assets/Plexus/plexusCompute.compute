@@ -1,22 +1,56 @@
 ﻿#pragma kernel main
+#pragma kernel flood
+#include "compute.cginc"
 
 RWStructuredBuffer<float3> _vertexBuffer;
+RWStructuredBuffer<uint> _indexBuffer;
 RWStructuredBuffer<int3> _connectionBuffer;
 
-int calcThreadId(uint3 id, uint3 max, int group)
+uint3 _threads;
+int3 _groups;
+int _count;
+float _Time;
+
+[numthreads(4,4,4)]
+void main (uint3 threadId : SV_DispatchThreadID)
 {
-    return ((max.x * max.y * id.z) + (max.x * id.y) + (id.x)) + ((max.x * max.y * max.z) * group);
+    int id = calculateId(threadId, _threads * _groups);
+    if (id > _count)
+        return;
+    
+    float3 currentPoint = _vertexBuffer[id];
+    float closestDistance = 100;
+    int closestId = -1;
+    
+    for (int i = 0; i < _count-1; i++)
+    {
+        if (i != id)
+        {
+            float3 samplePoint = _vertexBuffer[i];
+            float dist = distance(currentPoint, samplePoint);
+            
+            if (dist < closestDistance)
+            {
+                closestDistance = dist;
+                closestId = i;
+            }
+        
+        }
+    }
+    
+    _connectionBuffer[id] = closestId;
 }
 
-int calcId(uint3 id, uint3 max)
-{
-    return max.x * max.y * id.z + max.x * id.y + id.x;
-}
-
-
-[numthreads(8,8,1)]
-void main (uint3 threadId : SV_DispatchThreadID, uint3 groupId : SV_GroupID)
-{
-    int group = calcId(groupId, uint3(1,1,1));
-    int thread = calcThreadId(threadId, uint3(8,8,1), group);
+[numthreads(4,4,4)]
+void flood(uint3 threadId : SV_DispatchThreadID)
+{    
+    int id = calculateId(threadId, _threads * _groups);
+    if (id > _count)
+        return;
+    
+    float3 seed = random(id + _Time);
+    float3 vertex = normalize(seed);
+    
+    _vertexBuffer[id] = seed;
+    _indexBuffer[id] = id;
 }

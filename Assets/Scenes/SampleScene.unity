@@ -197,14 +197,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1520268312}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ef7571e27382d245a03dad642c2e678, type: 3}
+  m_Script: {fileID: 11500000, guid: ee9260801cded984abf22d0c58cf9071, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  compute: {fileID: 7200000, guid: 366f409bac31c16489d9596f55150adf, type: 3}
-  threadgroup_x: 1
-  threadgroup_y: 1
-  threadgroup_z: 1
-  idResult: 
+  compute: {fileID: 7200000, guid: 08bc41a1eddf20544b8239983d0ef7be, type: 3}
+  buffersize: 64
+  dispatch: {x: 2, y: 2, z: 2}
+  vertexResult: []
+  indexResult: 
+  connectionsResult: 
 --- !u!23 &1520268315
 MeshRenderer:
   m_ObjectHideFlags: 0
