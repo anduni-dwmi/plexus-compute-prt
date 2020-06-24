@@ -1,0 +1,17 @@
+﻿#pragma kernel main
+
+RWStructuredBuffer<int> idResult;
+int3 dimension;
+
+[numthreads(4, 4, 4)]
+void main (uint3 threadID : SV_DispatchThreadID, int3 groupID : SV_GroupID)
+{
+    // # id calculation
+    // # id = (threads.x * threads.y * id.z) + (threads.x * id.y) + id.x + (threads.x * threads.y * threads.z * groupid);
+    
+    int id = 4 * 4 * threadID.z + 4 * threadID.y + threadID.x + 4 * 4 * 4 * groupID;
+    
+    int index = threadID.x * threadID.y * threadID.z;
+    
+    idResult[id] = id;
+}

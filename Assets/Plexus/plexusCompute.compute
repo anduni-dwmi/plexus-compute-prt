@@ -1,0 +1,22 @@
+﻿#pragma kernel main
+
+RWStructuredBuffer<float3> _vertexBuffer;
+RWStructuredBuffer<int3> _connectionBuffer;
+
+int calcThreadId(uint3 id, uint3 max, int group)
+{
+    return ((max.x * max.y * id.z) + (max.x * id.y) + (id.x)) + ((max.x * max.y * max.z) * group);
+}
+
+int calcId(uint3 id, uint3 max)
+{
+    return max.x * max.y * id.z + max.x * id.y + id.x;
+}
+
+
+[numthreads(8,8,1)]
+void main (uint3 threadId : SV_DispatchThreadID, uint3 groupId : SV_GroupID)
+{
+    int group = calcId(groupId, uint3(1,1,1));
+    int thread = calcThreadId(threadId, uint3(8,8,1), group);
+}
